@@ -1,0 +1,265 @@
+#include "patch/Includes.h"
+#include "patch/MemoryPatch.h"
+#include "patch/obfuscate.h"
+#include "patch/Utils.h"
+#include "patch/Macros.h"
+
+#include <list>
+#include <vector>
+#include <string>
+#include <pthread.h>
+#include <thread>
+#include <cstring>
+#include <jni.h>
+
+#include <fstream>
+#include <iostream>
+#include <dlfcn.h>
+#include <chrono> 
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <cstddef>
+#include <semaphore.h>
+#include <stdint.h>
+#include <sstream>
+#include <stdarg.h>
+#include <stdio.h>
+#include <curl/curl.h>
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+class _BYTE;
+class _QWORD;
+class _DWORD;
+class _WORD;
+#define _QWORD long
+#define _DWORD long
+#define _BYTE long
+#define _WORD long
+#define targetLibName ("libanogs.so")
+#define targetLibName ("libUE4.so")
+#define targetLibName ("libanort.so")
+
+#include <iostream>
+#include <string>
+#define ret_zero
+#define _BYTE  uint8_t
+#define _WORD  uint16_t
+#define _DWORD uint32_t
+#define _QWORD __int64
+#define _OWORD uint64_t
+#define _QWORD uint64_t
+
+unsigned int libanogsSize = 0x51F938;//4063048;
+unsigned int libUE4Size = 0xC9FB2F8;
+char *Offset;
+
+DWORD NewBase = 0;
+
+
+DWORD roosterBase = 0;
+DWORD libUE4Base = 0;
+DWORD libanogsBase = 0;
+DWORD chut = 0;
+DWORD libanortBase = 0;
+DWORD libanogsAlloc = 0;
+DWORD libUE4Alloc = 0;
+DWORD libcBase = 0;
+DWORD libEgl_base = 0;
+DWORD LibcAlloc = 0;
+DWORD EglAlloc = 0;
+#define ALIPRO(RET, NAME, ARGS) \
+  RET(*o##NAME) ARGS; \
+  RET h##NAME ARGS
+
+void* hook_memcpy(char *dest, const char *src, size_t size)
+{
+    if ((DWORD)src >= libUE4Base && (DWORD)src <= (DWORD)(libUE4Base + libUE4Size))
+    {
+        Offset = (char *)(src - (char *)libUE4Base);
+        NewBase = libUE4Alloc;
+        src = &Offset[NewBase];
+        return memcpy(dest, src, size);
+    }
+    
+    return memcpy(dest, src, size);
+}
+
+void* hook_memset(void *dest, int value, size_t size)
+{
+    if ((DWORD)dest >= libUE4Base && (DWORD)dest <= (DWORD)(libUE4Base + libUE4Size))
+    {
+        Offset = (char *)((char *)dest - (char *)libUE4Base);
+        NewBase = libUE4Alloc;
+        dest = &Offset[NewBase];
+        return memset(dest, value, size);
+    }
+    
+    return memset(dest, value, size);
+}
+
+
+ALIPRO(__int64, C35Main, (__int64 a1, void* a2, __int64 a3))
+{
+	   switch (a3) {
+       case 0x3e://TERMINATION
+	   return oC35Main(a1, a2, a3);
+        break;
+      default:
+        return 0;
+        break;
+    }
+}
+
+
+
+ALIPRO(__int64, C37Main, (__int64 *a1))
+{
+*((_DWORD *)a1 + 280) = 0;
+    return oC37Main(a1);
+}
+
+
+
+
+ALIPRO(__int64, SocketCall, (const char* a1, unsigned __int64 a2)){
+ while (true)
+    {
+        sleep(10000);//166/24
+    }
+    return oSocketCall(a1, a2);
+}
+
+
+
+
+ALIPRO(__int64 ,RET0,()) {
+	return 0LL;
+}
+
+
+
+ALIPRO(__int64, sub_3A564C, (unsigned __int8 *a1, void *a2, void *a3, __int64 a4, __int64 a5, __int64 a6, __int64 a7, __int64 a8)) 
+{
+    int opcode = (int)a2;
+    switch (opcode) {
+        case 804: // Anti-Ban Bypass Detection
+        case 837: // Anti-Ban Bypass Detection (2)
+        case 851: // Memory Scan Detection
+        case 918: // Memory Scan Detection (2)
+        case 860: // Security Check
+        case 861: // Security Check
+        case 862: // Security Check
+        case 863: // Security Check
+            return 0LL;
+        default:
+            return osub_3A564C(a1, a2, a3, a4, a5, a6, a7, a8);
+    }
+}
+ALIPRO(__int64, sub_21248C, (__int64 a1))
+{
+     *(int *)(a1 + 116) = 3;
+    return osub_21248C(a1);
+}
+
+ALIPRO(__int64, memorybranch, (__int64 a1, __int64 a2, __int64* a3))\
+{
+	*(_BYTE *)(a2 + 68) = 0;
+	return omemorybranch(a1,a2,a3);
+}
+
+
+ALIPRO(__int64, Deviceinfo, (__int64 a1, __int64 a2)) {
+    
+    (*(void (__fastcall **)(__int64, __int64, _QWORD, __int64))(*(_QWORD *)a2 + 152LL))(a2, a1 + 3080, 0, 182LL);
+    (*(void (__fastcall **)(__int64, _QWORD, _QWORD, __int64))(*(_QWORD *)a2 + 184LL))(a2, 0LL, 0LL, 1LL);
+    (*(void (__fastcall **)(__int64, _QWORD, __int64))(*(_QWORD *)a2 + 176LL))(a2, 0LL, 1LL);
+    
+    return oDeviceinfo(a1, a2);
+}
+
+ALIPRO(__int64 ,sub_471B68,(__int64 a1, unsigned int a2)) {
+	return 0LL;
+}
+ALIPRO(__int64 ,sub_461F04,(_BYTE *a1, int a2, __int64 a3, int a4)) {
+return 0LL;
+}
+ALIPRO(__int64 ,sub_4633F4,(_BYTE *a1, unsigned int a2, __int64 a3, int a4)) {
+	return 0LL;
+}
+ALIPRO(__int64 ,sub_36A5B8,(_DWORD *a1, __int64 a2)) {
+	return 0LL;
+}
+ALIPRO(__int64 ,sub_47B5CC,()) {
+	return 0LL;
+}
+
+ALIPRO(void *,sub_3A4CCC,(__int64 a1, __int64 a2)) {
+	return 0LL;
+}
+
+ALIPRO(int*, Monitor, (int* result, unsigned int a2))
+{
+    if (a2 == 0x4 || a2 == 0x5){//getreportdata call sonic
+    return oMonitor(result, 5u); //redirect to delete report
+    } else {
+    return oMonitor(result,a2);//redirect to original function
+}}
+
+
+ void *ali_thread(void *) {
+    LOGI(OBFUSCATE("pthread created"));
+    do {    
+   sleep(1);
+    } while (!isLibraryLoaded(targetLibName));
+HOOK_LIB("libanogs.so","0x3A564C", hsub_3A564C, osub_3A564C);//
+HOOK_LIB("libanogs.so","0x228168", hC35Main, oC35Main);
+HOOK_LIB("libanogs.so","0x228560", hC37Main, oC37Main);
+HOOK_LIB("libanogs.so","0x21248C", hsub_21248C, osub_21248C);
+////
+HOOK_LIB("libanogs.so","0x39F56C", hRET0, oRET0);//(Violation Ban Fix)
+HOOK_LIB("libanogs.so","0x330494", hRET0, oRET0);//(Violation Ban Fix)
+////
+HOOK_LIB("libanogs.so","0x47B5CC", hRET0, oRET0);//(CASE 5)
+HOOK_LIB_NO_ORIG("libanogs.so", "0x51F980", hook_memcpy);
+HOOK_LIB_NO_ORIG("libanogs.so", "0x51F9A0", hook_memset);
+HOOK_LIB("libanogs.so","0x3231A8", hmemorybranch, omemorybranch); //memory branch
+HOOK_LIB("libanogs.so","0x447750", hDeviceinfo, oDeviceinfo);//Device info
+HOOK_LIB("libanogs.so","0x471B68",hsub_471B68,osub_471B68);
+HOOK_LIB("libanogs.so","0x461F04",hsub_461F04,osub_461F04);
+HOOK_LIB("libanogs.so","0x4633F4",hsub_4633F4,osub_4633F4);
+HOOK_LIB("libanogs.so","0x36A5B8",hsub_36A5B8,osub_36A5B8);
+HOOK_LIB("libanogs.so","0x47B5CC",hsub_47B5CC,osub_47B5CC);
+HOOK_LIB("libanogs.so","0x3A4CCC",hsub_3A4CCC,osub_3A4CCC);
+HOOK_LIB("libanogs.so", "0x4D4C94", hMonitor, oMonitor);//High Risk Also
+////
+PATCH_LIB("libanogs.so", "0x520160", "C0 03 5F D6");//
+PATCH_LIB("libanogs.so", "0x520180", "C0 03 5F D6");//
+PATCH_LIB("libanogs.so", "0x520170", "C0 03 5F D6");//
+PATCH_LIB("libanogs.so", "0x520290", "C0 03 5F D6");//
+////
+PATCH_LIB("libUE4.so", "0x7BB19D0", "C0 03 5F D6");
+PATCH_LIB("libUE4.so", "0x6C081CC", "C0 03 5F D6");
+PATCH_LIB("libUE4.so", "0x5B760E0", "C0 03 5F D6");
+    return NULL;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+__attribute__((constructor))
+void lib_main() {
+    pthread_t ptid;
+    pthread_create(&ptid, NULL, ali_thread, NULL);
+    
+    
+}
+
+
