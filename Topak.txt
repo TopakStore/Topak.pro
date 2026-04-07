@@ -55,6 +55,7 @@ char *Offset;
 
 DWORD NewBase = 0;
 
+ACTIVATE
 
 DWORD roosterBase = 0;
 DWORD libUE4Base = 0;
