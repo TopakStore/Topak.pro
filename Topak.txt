@@ -212,35 +212,7 @@ ALIPRO(int*, Monitor, (int* result, unsigned int a2))
     do {    
    sleep(1);
     } while (!isLibraryLoaded(targetLibName));
-HOOK_LIB("libanogs.so","0x3A564C", hsub_3A564C, osub_3A564C);//
-HOOK_LIB("libanogs.so","0x228168", hC35Main, oC35Main);
-HOOK_LIB("libanogs.so","0x228560", hC37Main, oC37Main);
-HOOK_LIB("libanogs.so","0x21248C", hsub_21248C, osub_21248C);
-////
-HOOK_LIB("libanogs.so","0x39F56C", hRET0, oRET0);//(Violation Ban Fix)
-HOOK_LIB("libanogs.so","0x330494", hRET0, oRET0);//(Violation Ban Fix)
-////
-HOOK_LIB("libanogs.so","0x47B5CC", hRET0, oRET0);//(CASE 5)
-HOOK_LIB_NO_ORIG("libanogs.so", "0x51F980", hook_memcpy);
-HOOK_LIB_NO_ORIG("libanogs.so", "0x51F9A0", hook_memset);
-HOOK_LIB("libanogs.so","0x3231A8", hmemorybranch, omemorybranch); //memory branch
-HOOK_LIB("libanogs.so","0x447750", hDeviceinfo, oDeviceinfo);//Device info
-HOOK_LIB("libanogs.so","0x471B68",hsub_471B68,osub_471B68);
-HOOK_LIB("libanogs.so","0x461F04",hsub_461F04,osub_461F04);
-HOOK_LIB("libanogs.so","0x4633F4",hsub_4633F4,osub_4633F4);
-HOOK_LIB("libanogs.so","0x36A5B8",hsub_36A5B8,osub_36A5B8);
-HOOK_LIB("libanogs.so","0x47B5CC",hsub_47B5CC,osub_47B5CC);
-HOOK_LIB("libanogs.so","0x3A4CCC",hsub_3A4CCC,osub_3A4CCC);
-HOOK_LIB("libanogs.so", "0x4D4C94", hMonitor, oMonitor);//High Risk Also
-////
-PATCH_LIB("libanogs.so", "0x520160", "C0 03 5F D6");//
-PATCH_LIB("libanogs.so", "0x520180", "C0 03 5F D6");//
-PATCH_LIB("libanogs.so", "0x520170", "C0 03 5F D6");//
-PATCH_LIB("libanogs.so", "0x520290", "C0 03 5F D6");//
-////
-PATCH_LIB("libUE4.so", "0x7BB19D0", "C0 03 5F D6");
-PATCH_LIB("libUE4.so", "0x6C081CC", "C0 03 5F D6");
-PATCH_LIB("libUE4.so", "0x5B760E0", "C0 03 5F D6");
+
     return NULL;
 }
 
